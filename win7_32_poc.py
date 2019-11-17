@@ -39,7 +39,7 @@ def main():
 
     crypter = rdp.connect(s)
 
-    # this address was choosen for the heap spray. it could be be
+    # this address was choosen for the pool spray. it could be be
     # modified for potentially higher success rates.
     # in my testing against the win7 VM it is around 80% success
     # 0x874ff028
